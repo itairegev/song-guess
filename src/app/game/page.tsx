@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useGame, getVisibleLetters, createInitialRound } from '@/hooks/use-game'
 import type { Song } from '@/lib/spotify'
@@ -20,7 +20,7 @@ export default function GamePage() {
   } = useGame()
   const audio = useAudio()
 
-  const [substitutes, setSubstitutes] = useState<Song[]>([])
+  const substitutesRef = useRef<Song[]>([])
 
   // Load game data from sessionStorage
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function GamePage() {
     }
     // Use first 5 for game, rest as substitutes
     startGame(era, songs.slice(0, 5))
-    setSubstitutes(songs.slice(5))
+    substitutesRef.current = songs.slice(5)
   }, [router, startGame])
 
   // Load audio when round changes
@@ -49,9 +49,9 @@ export default function GamePage() {
   // If audio fails to load, try a substitute song
   useEffect(() => {
     if (audio.loadError && game?.phase === 'playing') {
-      if (substitutes.length > 0) {
-        const [sub, ...rest] = substitutes
-        setSubstitutes(rest)
+      if (substitutesRef.current.length > 0) {
+        const [sub, ...rest] = substitutesRef.current
+        substitutesRef.current = rest
         setGame(prev => {
           if (!prev) return prev
           const rounds = [...prev.rounds]

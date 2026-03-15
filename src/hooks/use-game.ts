@@ -19,7 +19,7 @@ export interface GameState {
   songs: Song[]
   currentRound: number
   rounds: RoundState[]
-  phase: 'playing' | 'between' | 'finished'
+  phase: 'playing' | 'round-result' | 'game-over'
 }
 
 export function createInitialRound(song: Song): RoundState {
@@ -117,13 +117,15 @@ export function useGame() {
     })
   }
 
-  function handleGuess(guess: string) {
-    if (!game) return
+  function handleGuess(guess: string): boolean {
+    if (!game) return false
     const round = game.rounds[game.currentRound]
-    if (!round) return
+    if (!round) return false
 
     const correct = isCorrectGuess(guess, round.song.name)
-    const score = correct ? calculateRoundScore(round.audioHints, round.letterHints) : 0
+    if (!correct) return false
+
+    const score = calculateRoundScore(round.audioHints, round.letterHints)
 
     setGame(prev => {
       if (!prev) return prev
@@ -131,13 +133,14 @@ export function useGame() {
       if (!r) return prev
       const updatedRound: RoundState = {
         ...r,
-        guessedCorrectly: correct,
+        guessedCorrectly: true,
         score,
       }
       const rounds = [...prev.rounds]
       rounds[prev.currentRound] = updatedRound
-      return { ...prev, rounds, phase: 'between' }
+      return { ...prev, rounds, phase: 'round-result' }
     })
+    return true
   }
 
   function handleSkip() {
@@ -148,7 +151,7 @@ export function useGame() {
       const updatedRound: RoundState = { ...round, skipped: true, score: 0 }
       const rounds = [...prev.rounds]
       rounds[prev.currentRound] = updatedRound
-      return { ...prev, rounds, phase: 'between' }
+      return { ...prev, rounds, phase: 'round-result' }
     })
   }
 
@@ -156,7 +159,7 @@ export function useGame() {
     setGame(prev => {
       if (!prev) return prev
       const next = prev.currentRound + 1
-      const phase = next >= prev.rounds.length ? 'finished' : 'playing'
+      const phase = next >= prev.rounds.length ? 'game-over' : 'playing'
       return { ...prev, currentRound: next, phase }
     })
   }

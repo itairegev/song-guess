@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import type { RoundState } from '@/hooks/use-game'
 
@@ -10,18 +10,22 @@ interface GameResult {
   totalScore: number
 }
 
+function getGameResult(): GameResult | null {
+  if (typeof window === 'undefined') return null
+  const raw = sessionStorage.getItem('gameResult')
+  if (!raw) return null
+  return JSON.parse(raw)
+}
+
 export default function ResultPage() {
   const router = useRouter()
-  const [result, setResult] = useState<GameResult | null>(null)
+  const result = useMemo(() => getGameResult(), [])
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('gameResult')
-    if (!raw) {
+    if (!result) {
       router.push('/')
-      return
     }
-    setResult(JSON.parse(raw))
-  }, [router])
+  }, [result, router])
 
   if (!result) return null
 
