@@ -1,5 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { filterTracks, pickRandomSongs, ERA_PLAYLISTS, fetchPlaylistTracks } from '@/lib/deezer'
+import { filterTracks, pickRandomSongs, ERA_PLAYLISTS, fetchPlaylistTracks, cleanSongTitle } from '@/lib/deezer'
+
+describe('cleanSongTitle', () => {
+  it('removes parenthesized version info', () => {
+    expect(cleanSongTitle('Return of the Mack (Radio Edit)')).toBe('Return of the Mack')
+  })
+
+  it('removes bracketed version info', () => {
+    expect(cleanSongTitle('Believe [Club Mix]')).toBe('Believe')
+  })
+
+  it('removes remaster after hyphen', () => {
+    expect(cleanSongTitle('Something Got Me Started - 2008 Remaster')).toBe('Something Got Me Started')
+  })
+
+  it('removes remix after hyphen', () => {
+    expect(cleanSongTitle('Blue Monday - Remix')).toBe('Blue Monday')
+  })
+
+  it('removes multiple parenthesized parts', () => {
+    expect(cleanSongTitle('MMMBop (Single Version) [Remastered]')).toBe('MMMBop')
+  })
+
+  it('keeps titles without version info', () => {
+    expect(cleanSongTitle('Bohemian Rhapsody')).toBe('Bohemian Rhapsody')
+  })
+
+  it('keeps meaningful hyphens', () => {
+    expect(cleanSongTitle('Self-Esteem')).toBe('Self-Esteem')
+  })
+
+  it('removes feat after hyphen', () => {
+    expect(cleanSongTitle('Song Name - feat. Someone')).toBe('Song Name')
+  })
+})
 
 describe('ERA_PLAYLISTS', () => {
   it('maps era labels to playlist IDs', () => {

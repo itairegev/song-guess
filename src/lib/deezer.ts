@@ -26,12 +26,19 @@ export const ERA_PLAYLISTS: Record<string, { playlistId: string; label: string }
   '2020s': { playlistId: '13650084141', label: '2020s' },
 }
 
+export function cleanSongTitle(title: string): string {
+  return title
+    .replace(/\s*[\(\[].*?[\)\]]/g, '')  // remove (anything) and [anything]
+    .replace(/\s*-\s*(\d{4}\s+)?(remaster|remix|edit|version|mix|live|mono|stereo|single|deluxe|bonus|acoustic|radio|original|feat\b).*$/i, '')  // remove " - Remaster...", " - 2008 Remaster..." etc.
+    .trim()
+}
+
 export function filterTracks(tracks: DeezerTrackRaw[]): Song[] {
   return tracks
     .filter(t => t.preview && t.preview.length > 10)
     .map(t => ({
       id: String(t.id),
-      name: t.title,
+      name: cleanSongTitle(t.title),
       artist: t.artist?.name ?? 'Unknown',
       year: '',
       previewUrl: t.preview,
