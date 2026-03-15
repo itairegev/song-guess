@@ -36,13 +36,13 @@ describe('cleanSongTitle', () => {
 })
 
 describe('ERA_PLAYLISTS', () => {
-  it('maps era labels to playlist IDs', () => {
-    expect(ERA_PLAYLISTS['90s'].playlistId).toBeDefined()
-    expect(ERA_PLAYLISTS['2000s'].playlistId).toBeDefined()
+  it('maps era labels to playlist ID arrays', () => {
+    expect(ERA_PLAYLISTS['90s'].playlistIds.length).toBeGreaterThan(0)
+    expect(ERA_PLAYLISTS['2000s'].playlistIds.length).toBeGreaterThan(0)
   })
 
-  it('covers all decades', () => {
-    expect(Object.keys(ERA_PLAYLISTS)).toEqual(['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s'])
+  it('covers all categories', () => {
+    expect(Object.keys(ERA_PLAYLISTS)).toEqual(['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s', 'Israeli'])
   })
 })
 

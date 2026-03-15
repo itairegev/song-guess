@@ -15,16 +15,40 @@ export interface Song {
   previewUrl: string
 }
 
-// Curated Deezer playlists: "100 Greatest Songs of the [decade]"
-export const ERA_PLAYLISTS: Record<string, { playlistId: string; label: string }> = {
-  '60s': { playlistId: '11798814481', label: '60s' },
-  '70s': { playlistId: '11798818261', label: '70s' },
-  '80s': { playlistId: '11798808421', label: '80s' },
-  '90s': { playlistId: '11798812881', label: '90s' },
-  '2000s': { playlistId: '11153531204', label: '2000s' },
-  '2010s': { playlistId: '11153461484', label: '2010s' },
-  '2020s': { playlistId: '13650084141', label: '2020s' },
-  'Israeli': { playlistId: '14340903501', label: 'Israeli' },
+// Multiple playlists per era for variety
+export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: string }> = {
+  '60s': {
+    label: '60s',
+    playlistIds: ['11798814481', '7281498024', '4448533262'],
+  },
+  '70s': {
+    label: '70s',
+    playlistIds: ['11798818261', '7957934742', '6046721604'],
+  },
+  '80s': {
+    label: '80s',
+    playlistIds: ['11798808421', '867825522', '8512471762'],
+  },
+  '90s': {
+    label: '90s',
+    playlistIds: ['11798812881', '878989033', '8873744282', '9796303762'],
+  },
+  '2000s': {
+    label: '2000s',
+    playlistIds: ['11153531204', '248297032', '1318937087'],
+  },
+  '2010s': {
+    label: '2010s',
+    playlistIds: ['11153461484', '14917875723', '12092135471'],
+  },
+  '2020s': {
+    label: '2020s',
+    playlistIds: ['13650084141', '2714778644'],
+  },
+  'Israeli': {
+    label: 'Israeli',
+    playlistIds: ['14340903501', '9886516382', '3940900822'],
+  },
 }
 
 export function cleanSongTitle(title: string): string {
@@ -47,15 +71,25 @@ export function filterTracks(tracks: DeezerTrackRaw[]): Song[] {
 }
 
 export function pickRandomSongs(songs: Song[], count: number): Song[] {
-  const shuffled = [...songs].sort(() => Math.random() - 0.5)
+  // Deduplicate by song name (same song can appear in multiple playlists)
+  const unique = new Map<string, Song>()
+  for (const song of songs) {
+    const key = song.name.toLowerCase()
+    if (!unique.has(key)) {
+      unique.set(key, song)
+    }
+  }
+  const deduped = [...unique.values()]
+  const shuffled = deduped.sort(() => Math.random() - 0.5)
   return shuffled.slice(0, count)
 }
 
 export async function fetchPlaylistTracks(
   playlistId: string,
-  limit: number = 100
+  limit: number = 200,
+  offset: number = 0
 ): Promise<DeezerTrackRaw[]> {
-  const url = `https://api.deezer.com/playlist/${playlistId}/tracks?limit=${limit}`
+  const url = `https://api.deezer.com/playlist/${playlistId}/tracks?limit=${limit}&index=${offset}`
 
   const response = await fetch(url)
 
@@ -68,12 +102,16 @@ export async function fetchPlaylistTracks(
 }
 
 export async function fetchSongsForEra(era: string): Promise<Song[]> {
-  const playlist = ERA_PLAYLISTS[era]
-  if (!playlist) {
+  const config = ERA_PLAYLISTS[era]
+  if (!config) {
     throw new Error(`Invalid era: ${era}`)
   }
 
-  const rawTracks = await fetchPlaylistTracks(playlist.playlistId)
+  // Pick a random playlist from the era's options
+  const playlistId = config.playlistIds[Math.floor(Math.random() * config.playlistIds.length)]
+
+  // Fetch with random offset for large playlists
+  const rawTracks = await fetchPlaylistTracks(playlistId, 200)
   const songs = filterTracks(rawTracks)
 
   // Pick 8 (5 to play + 3 substitutes)

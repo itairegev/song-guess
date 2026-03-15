@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  fetchPlaylistTracks,
-  filterTracks,
-  pickRandomSongs,
-  ERA_PLAYLISTS,
-} from '@/lib/deezer'
+import { fetchSongsForEra, ERA_PLAYLISTS } from '@/lib/deezer'
 
 export async function GET(request: NextRequest) {
   const era = request.nextUrl.searchParams.get('era')
@@ -17,9 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { playlistId } = ERA_PLAYLISTS[era]
-    const rawTracks = await fetchPlaylistTracks(playlistId)
-    const songs = filterTracks(rawTracks)
+    const songs = await fetchSongsForEra(era)
 
     if (songs.length === 0) {
       return NextResponse.json(
@@ -28,10 +21,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Pick 8 (5 to play + 3 substitutes)
-    const selected = pickRandomSongs(songs, 8)
-
-    return NextResponse.json({ songs: selected })
+    return NextResponse.json({ songs })
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch songs' },
