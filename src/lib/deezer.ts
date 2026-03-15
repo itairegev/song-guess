@@ -49,6 +49,10 @@ export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: strin
     label: 'Israeli',
     playlistIds: ['14340903501', '9886516382', '3940900822'],
   },
+  'Hot Now': {
+    label: 'Hot Now',
+    playlistIds: ['chart:0', '10064140302', '9890417302'],
+  },
 }
 
 export function cleanSongTitle(title: string): string {
@@ -89,7 +93,11 @@ export async function fetchPlaylistTracks(
   limit: number = 200,
   offset: number = 0
 ): Promise<DeezerTrackRaw[]> {
-  const url = `https://api.deezer.com/playlist/${playlistId}/tracks?limit=${limit}&index=${offset}`
+  // Support Deezer chart endpoint via "chart:N" IDs
+  const isChart = playlistId.startsWith('chart:')
+  const url = isChart
+    ? `https://api.deezer.com/chart/${playlistId.slice(6)}/tracks?limit=${limit}&index=${offset}`
+    : `https://api.deezer.com/playlist/${playlistId}/tracks?limit=${limit}&index=${offset}`
 
   const response = await fetch(url)
 

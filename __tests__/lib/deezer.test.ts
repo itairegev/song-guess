@@ -42,7 +42,7 @@ describe('ERA_PLAYLISTS', () => {
   })
 
   it('covers all categories', () => {
-    expect(Object.keys(ERA_PLAYLISTS)).toEqual(['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s', 'Israeli'])
+    expect(Object.keys(ERA_PLAYLISTS)).toEqual(['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s', 'Israeli', 'Hot Now'])
   })
 })
 

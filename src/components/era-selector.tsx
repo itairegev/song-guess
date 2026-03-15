@@ -1,6 +1,6 @@
 'use client'
 
-const ERAS = ['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s', 'Israeli']
+const ERAS = ['60s', '70s', '80s', '90s', '2000s', '2010s', '2020s', 'Israeli', 'Hot Now']
 
 interface EraSelectorProps {
   selected: string | null
