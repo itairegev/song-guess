@@ -1,44 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
-  getSpotifyToken,
-  searchTracks,
+  fetchPlaylistTracks,
   filterTracks,
   pickRandomSongs,
-  ERA_RANGES,
-} from '@/lib/spotify'
+  ERA_PLAYLISTS,
+} from '@/lib/deezer'
 
 export async function GET(request: NextRequest) {
   const era = request.nextUrl.searchParams.get('era')
 
-  if (!era || !ERA_RANGES[era]) {
+  if (!era || !ERA_PLAYLISTS[era]) {
     return NextResponse.json(
-      { error: 'Invalid era. Must be one of: ' + Object.keys(ERA_RANGES).join(', ') },
+      { error: 'Invalid era. Must be one of: ' + Object.keys(ERA_PLAYLISTS).join(', ') },
       { status: 400 }
     )
   }
 
-  const clientId = process.env.SPOTIFY_CLIENT_ID
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) {
-    return NextResponse.json(
-      { error: 'Spotify credentials not configured' },
-      { status: 500 }
-    )
-  }
-
   try {
-    const token = await getSpotifyToken(clientId, clientSecret)
-    const yearRange = ERA_RANGES[era]
-    const offset = Math.floor(Math.random() * 950)
+    const { playlistId } = ERA_PLAYLISTS[era]
+    const rawTracks = await fetchPlaylistTracks(playlistId)
+    const songs = filterTracks(rawTracks)
 
-    const rawTracks = await searchTracks(token, yearRange, offset)
-    let songs = filterTracks(rawTracks, 50)
-
-    // Fallback: relax popularity if not enough songs
-    if (songs.length < 5) {
-      const fallbackTracks = await searchTracks(token, yearRange, 0)
-      songs = filterTracks(fallbackTracks, 30)
+    if (songs.length === 0) {
+      return NextResponse.json(
+        { error: 'No songs with previews found for this era' },
+        { status: 404 }
+      )
     }
 
     // Pick 8 (5 to play + 3 substitutes)

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useGame, getVisibleLetters, createInitialRound } from '@/hooks/use-game'
-import type { Song } from '@/lib/spotify'
+import type { Song } from '@/lib/deezer'
 import { useAudio } from '@/hooks/use-audio'
 import { AudioPlayerUI } from '@/components/audio-player'
 import { SongBlanks } from '@/components/song-blanks'

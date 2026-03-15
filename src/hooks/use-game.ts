@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Song } from '@/lib/spotify'
+import { Song } from '@/lib/deezer'
 import { calculateRoundScore } from '@/lib/scoring'
 import { isCorrectGuess } from '@/lib/fuzzy-match'
 
