@@ -16,7 +16,7 @@ export interface Song {
 }
 
 // Multiple playlists per era for variety
-export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: string }> = {
+export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: string; hebrewOnly?: boolean }> = {
   '60s': {
     label: '60s',
     playlistIds: ['11798814481', '7281498024', '4448533262'],
@@ -48,6 +48,7 @@ export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: strin
   'Israeli': {
     label: 'Israeli',
     playlistIds: ['14340903501', '9886516382'],
+    hebrewOnly: true,
   },
   'Hot Now': {
     label: 'Hot Now',
@@ -62,9 +63,14 @@ export function cleanSongTitle(title: string): string {
     .trim()
 }
 
-export function filterTracks(tracks: DeezerTrackRaw[]): Song[] {
+function hasHebrew(text: string): boolean {
+  return /[\u0590-\u05FF]/.test(text)
+}
+
+export function filterTracks(tracks: DeezerTrackRaw[], hebrewOnly = false): Song[] {
   return tracks
     .filter(t => t.preview && t.preview.length > 10)
+    .filter(t => !hebrewOnly || hasHebrew(t.title))
     .map(t => ({
       id: String(t.id),
       name: cleanSongTitle(t.title),
@@ -120,7 +126,7 @@ export async function fetchSongsForEra(era: string): Promise<Song[]> {
 
   // Fetch with random offset for large playlists
   const rawTracks = await fetchPlaylistTracks(playlistId, 200)
-  const songs = filterTracks(rawTracks)
+  const songs = filterTracks(rawTracks, config.hebrewOnly)
 
   // Pick 8 (5 to play + 3 substitutes)
   return pickRandomSongs(songs, 8)
