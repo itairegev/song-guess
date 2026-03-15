@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 export interface LetterResult {
   letter: string
-  status: 'correct' | 'present' | 'absent'
+  status: 'correct' | 'present' | 'absent' | 'space'
 }
 
 export function compareGuess(guess: string, target: string): LetterResult[] {
@@ -14,9 +14,11 @@ export function compareGuess(guess: string, target: string): LetterResult[] {
   const result: LetterResult[] = []
   const used = new Array(targetChars.length).fill(false)
 
-  // First pass: mark correct positions
+  // First pass: mark spaces and correct positions
   for (let i = 0; i < guessLower.length; i++) {
-    if (i < targetLower.length && guessLower[i] === targetLower[i]) {
+    if (guessLower[i] === ' ') {
+      result.push({ letter: ' ', status: 'space' })
+    } else if (i < targetLower.length && guessLower[i] === targetLower[i]) {
       result.push({ letter: guess[i], status: 'correct' })
       used[i] = true
     } else {
@@ -24,9 +26,9 @@ export function compareGuess(guess: string, target: string): LetterResult[] {
     }
   }
 
-  // Second pass: mark present (wrong position)
+  // Second pass: mark present (wrong position), skip spaces
   for (let i = 0; i < result.length; i++) {
-    if (result[i].status === 'correct') continue
+    if (result[i].status !== 'absent') continue
     const idx = targetChars.findIndex((c, j) => !used[j] && c === guessLower[i])
     if (idx !== -1) {
       result[i] = { ...result[i], status: 'present' }
@@ -66,21 +68,26 @@ export function GuessInput({ onGuess, disabled, songName }: GuessInputProps) {
     correct: 'bg-emerald-500 border-emerald-500',
     present: 'bg-yellow-500 border-yellow-500',
     absent: 'bg-gray-700 border-gray-700',
+    space: '',
   }
 
   return (
     <div className="space-y-2">
       {lastGuess && (
-        <div className="flex flex-wrap gap-1 justify-center">
-          {lastGuess.map((lr, i) => (
-            <span
-              key={i}
-              className={`inline-flex items-center justify-center w-7 h-9 text-sm font-bold rounded border
-                ${statusColor[lr.status]} text-white`}
-            >
-              {lr.letter === ' ' ? '\u00A0' : lr.letter.toUpperCase()}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-1 justify-center" dir="auto">
+          {lastGuess.map((lr, i) =>
+            lr.status === 'space' ? (
+              <span key={i} className="w-2" />
+            ) : (
+              <span
+                key={i}
+                className={`inline-flex items-center justify-center w-7 h-9 text-sm font-bold rounded border
+                  ${statusColor[lr.status]} text-white`}
+              >
+                {lr.letter.toUpperCase()}
+              </span>
+            )
+          )}
         </div>
       )}
       <div className={`flex gap-2 ${shaking ? 'animate-shake' : ''}`}>

@@ -9,7 +9,7 @@ export function SongBlanks({ letters, letterHints }: SongBlanksProps) {
   return (
     <div className="text-center">
       <p className="text-xs text-gray-600 mb-2">SONG TITLE</p>
-      <div className="flex flex-wrap gap-1.5 justify-center mb-2">
+      <div className="flex flex-wrap gap-1.5 justify-center mb-2" dir="auto">
         {letters.map((ch, i) => {
           if (ch === ' ') {
             return <span key={i} className="w-3" />

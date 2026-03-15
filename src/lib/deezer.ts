@@ -47,7 +47,7 @@ export const ERA_PLAYLISTS: Record<string, { playlistIds: string[]; label: strin
   },
   'Israeli': {
     label: 'Israeli',
-    playlistIds: ['14340903501', '9886516382', '3940900822'],
+    playlistIds: ['14340903501', '9886516382'],
   },
   'Hot Now': {
     label: 'Hot Now',

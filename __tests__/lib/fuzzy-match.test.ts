@@ -37,4 +37,16 @@ describe('isCorrectGuess', () => {
   it('handles extra whitespace', () => {
     expect(isCorrectGuess('  bohemian   rhapsody  ', 'Bohemian Rhapsody')).toBe(true)
   })
+
+  it('matches Hebrew titles exactly', () => {
+    expect(isCorrectGuess('עטור מצחך', 'עטור מצחך')).toBe(true)
+  })
+
+  it('rejects different Hebrew words', () => {
+    expect(isCorrectGuess('חלליות', 'ניצוצות')).toBe(false)
+  })
+
+  it('rejects empty after normalization', () => {
+    expect(isCorrectGuess('', 'test')).toBe(false)
+  })
 })
