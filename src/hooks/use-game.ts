@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Song } from '@/lib/deezer'
 import { calculateRoundScore } from '@/lib/scoring'
 import { isCorrectGuess } from '@/lib/fuzzy-match'
@@ -82,7 +82,7 @@ export function useGame() {
     ? game.rounds.reduce((sum, r) => sum + r.score, 0)
     : 0
 
-  function startGame(era: string, songs: Song[]) {
+  const startGame = useCallback((era: string, songs: Song[]) => {
     const rounds = songs.map(createInitialRound)
     setGame({
       era,
@@ -91,7 +91,7 @@ export function useGame() {
       rounds,
       phase: 'playing',
     })
-  }
+  }, [])
 
   function handleAudioHint() {
     setGame(prev => {
