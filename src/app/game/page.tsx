@@ -116,6 +116,7 @@ export default function GamePage() {
       <GuessInput
         onGuess={handleGuess}
         disabled={game.phase !== 'playing'}
+        songName={currentRound.song.name}
       />
 
       {/* Hint buttons */}
