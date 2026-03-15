@@ -41,9 +41,9 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center min-h-[80vh] gap-10">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-purple-200 bg-clip-text text-transparent">
-          Song Guess
+          Name the song...
         </h1>
-        <p className="text-gray-500">How well do you know your music?</p>
+        <p className="text-gray-500">(mmmm him)</p>
       </div>
 
       <div>

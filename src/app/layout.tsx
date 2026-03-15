@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Song Guess',
+  title: 'Name the song... (mmmm him)',
   description: 'Guess the song from audio snippets',
 }
 
