@@ -89,7 +89,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="flex flex-col gap-5 min-h-[85vh]">
+    <div className="flex flex-col gap-4">
       {/* Top bar */}
       <div className="flex justify-between items-center text-sm">
         <span className="text-gray-500">Round <span className="text-purple-400">{game.currentRound + 1}</span>/{game.songs.length}</span>
@@ -108,9 +108,6 @@ export default function GamePage() {
 
       {/* Song blanks */}
       <SongBlanks letters={letters} letterHints={currentRound.letterHints} />
-
-      {/* Spacer */}
-      <div className="flex-grow" />
 
       {/* Guess input */}
       <GuessInput
