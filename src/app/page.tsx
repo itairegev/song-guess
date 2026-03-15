@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { EraSelector } from '@/components/era-selector'
+import { fetchSongsForEra } from '@/lib/deezer'
 
 export default function Home() {
   const [selectedEra, setSelectedEra] = useState<string | null>(null)
@@ -18,12 +19,11 @@ export default function Home() {
     const MAX_RETRIES = 3
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        const res = await fetch(`/api/spotify/songs?era=${selectedEra}`)
-        if (!res.ok) throw new Error('Failed to fetch songs')
-        const data = await res.json()
+        const songs = await fetchSongsForEra(selectedEra)
+        if (songs.length === 0) throw new Error('No songs found')
         sessionStorage.setItem('gameData', JSON.stringify({
           era: selectedEra,
-          songs: data.songs,
+          songs,
         }))
         router.push('/game')
         return

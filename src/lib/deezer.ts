@@ -58,3 +58,16 @@ export async function fetchPlaylistTracks(
   const data = await response.json()
   return data.data ?? []
 }
+
+export async function fetchSongsForEra(era: string): Promise<Song[]> {
+  const playlist = ERA_PLAYLISTS[era]
+  if (!playlist) {
+    throw new Error(`Invalid era: ${era}`)
+  }
+
+  const rawTracks = await fetchPlaylistTracks(playlist.playlistId)
+  const songs = filterTracks(rawTracks)
+
+  // Pick 8 (5 to play + 3 substitutes)
+  return pickRandomSongs(songs, 8)
+}
