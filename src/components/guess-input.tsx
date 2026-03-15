@@ -78,23 +78,39 @@ export function GuessInput({ onGuess, disabled, songName }: GuessInputProps) {
 
   return (
     <div className="space-y-2">
-      {lastGuess && (
-        <div className="flex flex-wrap gap-1 justify-center" dir="auto">
-          {lastGuess.map((lr, i) =>
-            lr.status === 'space' ? (
-              <span key={i} className="w-2" />
-            ) : (
-              <span
-                key={i}
-                className={`inline-flex items-center justify-center w-7 h-9 text-sm font-bold rounded border
-                  ${statusColor[lr.status]} text-white`}
-              >
-                {lr.letter.toUpperCase()}
-              </span>
-            )
-          )}
-        </div>
-      )}
+      {lastGuess && (() => {
+        const isRtl = lastGuess.some(lr => /[\u0590-\u05FF]/.test(lr.letter))
+        // Group into words by spaces
+        const words: LetterResult[][] = []
+        let current: LetterResult[] = []
+        for (const lr of lastGuess) {
+          if (lr.status === 'space') {
+            if (current.length > 0) words.push(current)
+            current = []
+          } else {
+            current.push(lr)
+          }
+        }
+        if (current.length > 0) words.push(current)
+
+        return (
+          <div className="flex flex-wrap gap-3 justify-center" dir={isRtl ? 'rtl' : 'ltr'}>
+            {words.map((word, wi) => (
+              <div key={wi} className="flex gap-1">
+                {word.map((lr, ci) => (
+                  <span
+                    key={ci}
+                    className={`inline-flex items-center justify-center w-7 h-9 text-sm font-bold rounded border
+                      ${statusColor[lr.status]} text-white`}
+                  >
+                    {lr.letter.toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        )
+      })()}
       <div className={`flex gap-2 ${shaking ? 'animate-shake' : ''}`}>
         <input
           type="text"
