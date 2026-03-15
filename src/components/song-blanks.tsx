@@ -30,7 +30,7 @@ export function SongBlanks({ letters, letterHints }: SongBlanksProps) {
       <p className="text-xs text-gray-600 mb-2">SONG TITLE</p>
       <div className="flex flex-wrap gap-3 justify-center mb-2">
         {words.map((word, wi) => (
-          <div key={wi} className="flex gap-1">
+          <div key={wi} className="flex flex-nowrap gap-1">
             {word.map((ch, ci) => {
               const isRevealed = ch !== '_'
               return (
