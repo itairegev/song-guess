@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export interface LetterResult {
   letter: string
@@ -49,6 +49,11 @@ export function GuessInput({ onGuess, disabled, songName }: GuessInputProps) {
   const [value, setValue] = useState('')
   const [shaking, setShaking] = useState(false)
   const [lastGuess, setLastGuess] = useState<LetterResult[] | null>(null)
+
+  useEffect(() => {
+    setLastGuess(null)
+    setValue('')
+  }, [songName])
 
   const handleSubmit = () => {
     if (!value.trim() || disabled) return
