@@ -24,6 +24,7 @@ export const ERA_PLAYLISTS: Record<string, { playlistId: string; label: string }
   '2000s': { playlistId: '11153531204', label: '2000s' },
   '2010s': { playlistId: '11153461484', label: '2010s' },
   '2020s': { playlistId: '13650084141', label: '2020s' },
+  'Israeli': { playlistId: '14340903501', label: 'Israeli' },
 }
 
 export function cleanSongTitle(title: string): string {
